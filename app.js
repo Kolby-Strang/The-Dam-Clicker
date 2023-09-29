@@ -1,4 +1,4 @@
-const waterSources = [
+let waterSources = [
     {
         name: 'Stream',
         cost: 100,
@@ -10,11 +10,11 @@ const waterSources = [
         name: 'Creek',
         cost: 300,
         basePrice: 300,
-        flowRate: 2,
+        flowRate: 1.5,
         amount: 0
     }
 ]
-const flowControllers = [
+let flowControllers = [
     {
         name: 'Turbine',
         cost: 300,
@@ -30,7 +30,7 @@ const flowControllers = [
         amount: 0
     }
 ]
-const clickUpgrades = [
+let clickUpgrades = [
     {
         name: 'Water Drop',
         cost: 10,
@@ -109,6 +109,7 @@ function purchaseSourceUpgrade(name) {
     }
     draw()
 }
+
 function purchaseFlowController(name) {
     let flowController = flowControllers.find(controller => controller.name == name)
     if (electricity >= flowController.cost) {
@@ -121,6 +122,7 @@ function purchaseFlowController(name) {
     }
     draw()
 }
+
 function purchaseClickUpgrade(name) {
     let clickUpgrade = clickUpgrades.find(upgrade => upgrade.name == name)
     if (electricity >= clickUpgrade.cost) {
@@ -217,6 +219,7 @@ function makeFlowUpgradeDivs() {
         document.getElementById('flow-controller-upgrades').appendChild(element)
     })
 }
+
 function findPrice(upgrade) {
     let newPrice = 0
     newPrice = upgrade.basePrice * ((upgrade.amount + 1) ** .8)
@@ -245,7 +248,25 @@ function condenseNum(number) {
     return number
 }
 
+function saveGame() {
+    window.localStorage.setItem('dam clicker info', JSON.stringify([
+        waterSources, flowControllers, clickUpgrades, electricity
+    ]))
+}
+
+function loadGame() {
+    if (window.localStorage.getItem('dam clicker info')) {
+        let savedGame = JSON.parse(window.localStorage.getItem('dam clicker info'))
+        waterSources = savedGame[0]
+        flowControllers = savedGame[1]
+        clickUpgrades = savedGame[2]
+        electricity = savedGame[3]
+    }
+}
+
+loadGame()
 setInterval(transferWater, 100)
+setInterval(saveGame, 10000)
 makeSourceUpgradeDivs()
 makeFlowUpgradeDivs()
 makeClickUpgradeDivs()

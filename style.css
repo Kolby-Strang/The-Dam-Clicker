@@ -1,0 +1,86 @@
+body {
+    user-select: none;
+}
+
+main {
+    background-image: url(https://www.cam.ac.uk/sites/www.cam.ac.uk/files/news/research/news/daniel-sinoca-aanclsb0su0-unsplash.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-color: #002d3d;
+}
+
+img {
+    max-width: 100%;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.dam-image {
+    max-height: 60vh;
+}
+
+.title {
+    max-width: 50vw;
+}
+
+.text-shadow {
+    text-shadow: 0 0 8px black;
+}
+
+.shop {
+    border-top: solid 4px black;
+    background-color: rgb(58, 58, 58);
+    padding: .5em;
+}
+
+.water-shop {
+    border: solid 3px #0d6efd;
+    border-radius: 5px 0 0 5px;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+.flow-shop {
+    border: solid 3px #198754;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+.click-shop {
+    border: solid 3px #dc3545;
+    border-radius: 0 5px 5px 0;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+
+.upgrade-card {
+    border: solid 2px;
+    border-radius: 5px;
+    margin-bottom: .5em;
+    margin-top: .5em;
+    padding: .5em;
+}
+
+.info {
+    font-size: x-small;
+    justify-content: space-between;
+}
+
+.currency-container {
+    border-top: solid 4px black;
+}
+
+.water-div {
+    background-color: #0d6efd;
+}
+
+.flow-div {
+    background-color: #198754;
+}
+
+.electricity-div {
+    background-color: #ffc107;
+}

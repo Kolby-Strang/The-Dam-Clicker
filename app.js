@@ -60,9 +60,18 @@ function clickDam() {
 }
 
 function draw() {
-    document.getElementById('water').innerText = water.toFixed(2)
-    document.getElementById('electricity').innerText = electricity.toFixed(2)
-    document.getElementById('flow').innerText = flow.toFixed(3)
+    document.getElementById('water').innerText = condenseNum(water)
+    document.getElementById('electricity').innerText = condenseNum(electricity)
+    document.getElementById('flow').innerText = condenseNum(flow)
+    clickUpgrades.forEach(upgrade => {
+        document.getElementById(upgrade.name + '-cost').innerText = condenseNum(upgrade.cost)
+    })
+    waterSources.forEach(source => {
+        document.getElementById(source.name + '-cost').innerText = condenseNum(source.cost)
+    })
+    flowControllers.forEach(controller => {
+        document.getElementById(controller.name + '-cost').innerText = condenseNum(controller.cost)
+    })
 }
 
 function transferWater() {
@@ -93,33 +102,36 @@ function purchaseSourceUpgrade(name) {
     if (electricity >= waterSource.cost) {
         waterSource.amount++
         electricity -= waterSource.cost
-        increasePrice(waterSource)
+        findPrice(waterSource)
         document.getElementById(waterSource.name + '-amount').innerText = waterSource.amount
     } else {
         insufficientFundsAlert()
     }
+    draw()
 }
 function purchaseFlowController(name) {
     let flowController = flowControllers.find(controller => controller.name == name)
     if (electricity >= flowController.cost) {
         flowController.amount++
         electricity -= flowController.cost
-        increasePrice(flowController)
+        findPrice(flowController)
         document.getElementById(flowController.name + '-amount').innerText = flowController.amount
     } else {
         insufficientFundsAlert()
     }
+    draw()
 }
 function purchaseClickUpgrade(name) {
     let clickUpgrade = clickUpgrades.find(upgrade => upgrade.name == name)
     if (electricity >= clickUpgrade.cost) {
         clickUpgrade.amount++
         electricity -= clickUpgrade.cost
-        increasePrice(clickUpgrade)
+        findPrice(clickUpgrade)
         document.getElementById(clickUpgrade.name + '-amount').innerText = clickUpgrade.amount
     } else {
         insufficientFundsAlert()
     }
+    draw()
 }
 
 function makeSourceUpgradeDivs() {
@@ -205,11 +217,11 @@ function makeFlowUpgradeDivs() {
         document.getElementById('flow-controller-upgrades').appendChild(element)
     })
 }
-function increasePrice(upgrade) {
+function findPrice(upgrade) {
     let newPrice = 0
     newPrice = upgrade.basePrice * ((upgrade.amount + 1) ** .8)
     upgrade.cost = newPrice
-    document.getElementById(upgrade.name + '-cost').innerText = Math.ceil(upgrade.cost)
+    return newPrice
 }
 
 function insufficientFundsAlert() {
@@ -221,6 +233,16 @@ function insufficientFundsAlert() {
         timer: 1500,
         toast: true
     })
+}
+
+function condenseNum(number) {
+    let abbreviations = ['', 'k', 'm', 'b', 't',]
+    for (let i = 0; true; i++) {
+        if (number / (1000 ** i) <= 1000) {
+            return (number / (1000 ** i)).toFixed(2) + abbreviations[i]
+        }
+    }
+    return number
 }
 
 setInterval(transferWater, 100)

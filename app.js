@@ -18,18 +18,18 @@ let waterSources = [
 ]
 let flowControllers = [
     {
-        name: 'Turbine',
-        cost: 1000,
-        basePrice: 1000,
-        deltaFlow: 1,
-        amount: 1
-    },
-    {
         name: 'Bigger Inlets',
         cost: 200,
         basePrice: 800,
         deltaFlow: .1,
         amount: 0
+    },
+    {
+        name: 'Turbine',
+        cost: 1000,
+        basePrice: 1000,
+        deltaFlow: 1,
+        amount: 1
     }
 ]
 let clickUpgrades = [
@@ -50,6 +50,8 @@ let clickUpgrades = [
 ]
 
 let electricity = 0
+let electricityEarnedLifetime = 0
+let maxElectricityOwned = 0
 let water = 0
 let waterCeiling = 100
 let flow = .1
@@ -63,7 +65,11 @@ let multiplier = 1
 function clickDam() {
     let total = 1
     clickUpgrades.forEach(upgrade => total += upgrade.power * upgrade.amount)
-    water += total * multiplier
+    if (multiplier == 1) {
+        water += total
+    } else {
+        electricity += total * multiplier
+    }
 }
 
 function transferWater() {
@@ -72,14 +78,17 @@ function transferWater() {
     draw()
     if (water > 0 && multiplier == 1) {
         electricity += flow
+        electricityEarnedLifetime += flow
         water -= flow
     } else if (multiplier > 1) {
         electricity += water
+        electricityEarnedLifetime += water
         water = 0
     }
     if (water < 0) {
         water = 0
     }
+    recordElectricityRecord()
 }
 
 function calculateFlow() {
@@ -91,7 +100,7 @@ function addWater() {
     waterSources.forEach(source => {
         water += source.flowRate * source.amount * multiplier
     })
-    if (water > waterCeiling)
+    if (water > waterCeiling && multiplier == 1)
         water = waterCeiling
 }
 
@@ -165,7 +174,8 @@ function makeSourceUpgradeDivs() {
             </div>
         </div>
     `
-        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card hidden'
+        element.id = source.name
         document.getElementById('water-source-upgrades').appendChild(element)
     })
 }
@@ -193,7 +203,8 @@ function makeClickUpgradeDivs() {
                         class="mdi mdi-flash"></i><span id="${upgrade.name}-cost">${upgrade.cost}</span></button>
             </div>
     `
-        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card hidden'
+        element.id = upgrade.name
         document.getElementById('click-strength-upgrades').appendChild(element)
     })
 }
@@ -222,12 +233,16 @@ function makeFlowUpgradeDivs() {
             </div>
         </div>
     `
-        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card hidden'
+        element.id = flow.name
         document.getElementById('flow-controller-upgrades').appendChild(element)
     })
 }
 
 function draw() {
+    // Stats updates
+    document.getElementById('all-time-electricity').innerText = condenseNum(electricityEarnedLifetime)
+
     // Currency Updates
     document.getElementById('water').innerText = condenseNum(water)
     document.getElementById('electricity').innerText = condenseNum(electricity)
@@ -250,7 +265,7 @@ function draw() {
     //  water flow calculation
     let waterFlow = 0
     waterSources.forEach(source => waterFlow += source.flowRate * source.amount)
-    document.getElementById('water-rate').innerText = condenseNum(waterFlow * 20)
+    document.getElementById('water-rate').innerText = condenseNum(waterFlow)
 
     // Button cost updates
     clickUpgrades.forEach(upgrade => {
@@ -260,6 +275,9 @@ function draw() {
         } else {
             document.getElementById(upgrade.name + '-button').classList.remove('disabled')
         }
+        if (upgrade.cost <= maxElectricityOwned + 50) {
+            document.getElementById(upgrade.name).classList.remove('hidden')
+        }
     })
     waterSources.forEach(source => {
         document.getElementById(source.name + '-cost').innerText = condenseNum(source.cost)
@@ -268,6 +286,9 @@ function draw() {
         } else {
             document.getElementById(source.name + '-button').classList.remove('disabled')
         }
+        if (source.cost <= maxElectricityOwned + 50) {
+            document.getElementById(source.name).classList.remove('hidden')
+        }
     })
     flowControllers.forEach(controller => {
         document.getElementById(controller.name + '-cost').innerText = condenseNum(controller.cost)
@@ -275,6 +296,9 @@ function draw() {
             document.getElementById(controller.name + '-button').classList.add('disabled')
         } else {
             document.getElementById(controller.name + '-button').classList.remove('disabled')
+        }
+        if (controller.cost <= maxElectricityOwned + 50) {
+            document.getElementById(controller.name).classList.remove('hidden')
         }
     })
 }
@@ -291,22 +315,24 @@ function sweetAlert(message, icon, timer) {
 }
 
 function makeBonusButton() {
-    let randX = Math.floor(Math.random() * 101)
-    let randY = Math.floor(Math.random() * 101)
+    let randY = Math.floor(Math.random() * 80) + 10
+    let randX = Math.floor(Math.random() * 80) + 10
     let element = document.createElement('div')
     let timeout = setTimeout(removeElement, 7000, element)
     element.innerHTML = `
-    <img id="${timeout}" class="fish-img" type="button" onclick="bonusClicked(${timeout})" src="https://purepng.com/public/uploads/large/purepng.com-fishfish-981524646248khl3k.png" alt="fish">
+    <img id="${timeout}" class="bonus" type="button" onclick="bonusClicked(${timeout})" src="https://www.pngall.com/wp-content/uploads/2017/03/Flood-PNG-Clipart.png" alt="Bonus">
     `
-    element.classList = 'position-absolute'
+    element.classList = 'position-absolute w-max'
     element.style.left = randX + '%'
-    element.style.top = randY + '%'
+    element.style.bottom = randY + '%'
     document.getElementById('dam-container').appendChild(element)
 }
 
 
 // #endregion
 
+
+// #region Bonus handlers
 function bonusClicked(timeoutID) {
     clearTimeout(timeoutID)
     element = document.getElementById(timeoutID)
@@ -322,7 +348,12 @@ function bonusActivate() {
 function bonusDeactivate() {
     document.getElementById('dam-container').classList.remove('dam-image-boost')
     multiplier = 1
+    flow = 0
+    water = 0
 }
+
+// #endregion
+
 
 // #region Util Functions
 
@@ -352,9 +383,11 @@ function removeElement(element) {
 
 // #region Save/Load Functions
 
+
+
 function saveGame() {
     window.localStorage.setItem('dam clicker info', JSON.stringify([
-        waterSources, flowControllers, clickUpgrades, electricity
+        waterSources, flowControllers, clickUpgrades, electricity, electricityEarnedLifetime, maxElectricityOwned
     ]))
 }
 
@@ -365,6 +398,8 @@ function loadGame() {
         flowControllers = savedGame[1]
         clickUpgrades = savedGame[2]
         electricity = savedGame[3]
+        electricityEarnedLifetime = savedGame[4]
+        maxElectricityOwned = savedGame[5]
     }
 }
 
@@ -377,10 +412,22 @@ function resetGame() {
 
 // #endregion
 
-loadGame()
-setInterval(transferWater, 50)
-setInterval(saveGame, 10000)
-setInterval(makeBonusButton, 30000)
+
+// #region Recording functions
+
+function recordElectricityRecord() {
+    if (electricity > maxElectricityOwned) {
+        maxElectricityOwned = electricity
+    }
+}
+
+// #endregion
+
 makeSourceUpgradeDivs()
 makeFlowUpgradeDivs()
 makeClickUpgradeDivs()
+loadGame()
+setInterval(transferWater, 50)
+setInterval(saveGame, 10000)
+setInterval(makeBonusButton, 60000)
+

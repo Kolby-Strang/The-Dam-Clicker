@@ -142,8 +142,30 @@ p {
     text-shadow: 0 0 8px black;
 }
 
+.w-max {
+    width: max-content;
+}
+
+.hidden {
+    display: none;
+}
+
 /* #endregion */
 
-.fish-img {
+.bonus {
     max-width: 7em;
+    animation: bonus ease-in-out 1.5s infinite;
+}
+
+@keyframes bonus {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
 }

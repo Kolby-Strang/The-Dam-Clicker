@@ -1,3 +1,5 @@
+/* #region Element selectors */
+
 body {
     user-select: none;
 }
@@ -6,6 +8,7 @@ main {
     background-image: url(https://www.cam.ac.uk/sites/www.cam.ac.uk/files/news/research/news/daniel-sinoca-aanclsb0su0-unsplash.jpg);
     background-size: cover;
     background-repeat: no-repeat;
+    background-position: bottom;
     background-color: #002d3d;
 }
 
@@ -17,8 +20,118 @@ p {
     margin-bottom: 0;
 }
 
+/* #endregion */
+
+/* #region Dam */
 .dam-image {
     max-height: 60vh;
+    margin-top: 5em;
+    margin-bottom: 5em;
+    animation: dam-image ease-in-out 3s infinite;
+    transition: ease-in-out .1s;
+}
+
+.dam-image-boost {
+    background-image: url(https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/ded4c09d-6f31-4249-b9c5-5918e01082f3/df7x0n1-12b200af-d15b-44dd-816a-5c7576b8cde6.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2RlZDRjMDlkLTZmMzEtNDI0OS1iOWM1LTU5MThlMDEwODJmM1wvZGY3eDBuMS0xMmIyMDBhZi1kMTViLTQ0ZGQtODE2YS01Yzc1NzZiOGNkZTYuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.ijiVpZGlZk-LfZwg4SoH9Sp87VefBf5UeMfuayiA9DU);
+    background-size: contain;
+    background-position: 51% -100px;
+    background-repeat: no-repeat;
+}
+
+.dam-image:hover {
+    transform: scale(1.05);
+}
+
+.dam-image:active {
+    transform: scale(.95);
+}
+
+@keyframes dam-image {
+
+    0%,
+    100% {
+        rotate: 8deg;
+
+    }
+
+    50% {
+        rotate: -8deg;
+    }
+}
+
+/* #endregion */
+
+/* #region Shop */
+
+.shop {
+    border-top: solid 4px black;
+    background-color: rgb(58, 58, 58);
+    padding: .5em;
+}
+
+.water-shop {
+    border: solid 3px #0d6efd;
+    border-radius: 5px;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+.flow-shop {
+    border: solid 3px #198754;
+    border-radius: 5px;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+.click-shop {
+    border: solid 3px #dc3545;
+    border-radius: 5px;
+    padding: .5em;
+    /* width: 100%; */
+}
+
+.upgrade-card {
+    border: solid 2px;
+    border-radius: 5px;
+    margin-bottom: .5em;
+    margin-top: .5em;
+    padding: .5em;
+}
+
+/* #endregion */
+
+/* #region Currency display classes */
+
+.currency-container {
+    border-top: solid 4px black;
+}
+
+.water-div {
+    background: #0d6efd;
+    background: linear-gradient(90deg, #0d6efd 16%, #ffffff 16.5%);
+    transition: ease-in-out 1s;
+}
+
+.flow-div {
+    background-color: #198754;
+    transition: ease-in-out .5s;
+}
+
+.electricity-div {
+    background-color: #ffc107;
+}
+
+/* #endregion */
+
+/* #region Util Classes */
+
+.info {
+    font-size: x-small;
+    justify-content: space-between;
+}
+
+.btn {
+    transition: ease-in-out .2s;
 }
 
 .title {
@@ -29,58 +142,8 @@ p {
     text-shadow: 0 0 8px black;
 }
 
-.shop {
-    border-top: solid 4px black;
-    background-color: rgb(58, 58, 58);
-    padding: .5em;
-}
+/* #endregion */
 
-.water-shop {
-    border: solid 3px #0d6efd;
-    border-radius: 5px 0 0 5px;
-    padding: .5em;
-    /* width: 100%; */
-}
-
-.flow-shop {
-    border: solid 3px #198754;
-    padding: .5em;
-    /* width: 100%; */
-}
-
-.click-shop {
-    border: solid 3px #dc3545;
-    border-radius: 0 5px 5px 0;
-    padding: .5em;
-    /* width: 100%; */
-}
-
-
-.upgrade-card {
-    border: solid 2px;
-    border-radius: 5px;
-    margin-bottom: .5em;
-    margin-top: .5em;
-    padding: .5em;
-}
-
-.info {
-    font-size: x-small;
-    justify-content: space-between;
-}
-
-.currency-container {
-    border-top: solid 4px black;
-}
-
-.water-div {
-    background-color: #0d6efd;
-}
-
-.flow-div {
-    background-color: #198754;
-}
-
-.electricity-div {
-    background-color: #ffc107;
+.fish-img {
+    max-width: 7em;
 }

@@ -16,8 +16,9 @@
 
 <body>
 
-    <header class="container-fluid">
+    <main class="container-fluid">
 
+        <!-- #region TITLE -->
         <section class="row p-5">
             <div class="col-12 text-center">
                 <img class="title"
@@ -25,59 +26,65 @@
                     alt="Damn Clicker">
             </div>
         </section>
+        <!-- #endregion -->
 
-    </header>
-
-    <main class="container-fluid">
-
-        <!-- SECTION TITLE -->
-        <section class="row">
+        <!-- #region DAM ICON -->
+        <section class="row py-5 position-relative" id="dam-container">
             <div class="col-12 text-center">
                 <img class="dam-image" onclick="clickDam()"
                     src="https://cdn-icons-png.flaticon.com/512/3090/3090364.png" alt="Clickable dam">
             </div>
         </section>
-        <!-- !SECTION -->
+        <!-- #endregion -->
 
-        <!-- SECTION STAT DISPLAY -->
-        <section class="row fs-1 fw-bold text-white justify-content-center currency-container">
-            <div class="col-12 col-md-4 text-center water-div">
+        <!-- #region STAT DISPLAY -->
+        <section class="row fs-1 fw-bold currency-container">
+            <div class="col-12 col-md-4 text-center water-div" id="water-div">
                 <p>Water: <span id="water">0</span></p>
             </div>
-            <div class="col-12 col-md-4 text-center flow-div">
+            <div class="col-12 col-md-4 text-center flow-div" id="flow-div">
                 <p>Flow: <span id="flow">0</span></p>
             </div>
             <div class="col-12 col-md-4 text-center electricity-div">
                 <p><i class="mdi mdi-flash"></i>: <span id="electricity">0</span></p>
             </div>
         </section>
-        <!-- !SECTION -->
+        <!-- #endregion -->
 
-        <!-- SECTION SHOP -->
-        <section class="row text-white shop">
+        <!-- #region SHOP -->
+        <section class="row text-white shop justify-content-around">
             <!-- Water Sources -->
-            <div class="col-12 col-sm-6 col-md-4 mb-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-4 col-xxl-3 mb-4">
                 <div class="row water-shop" id="water-source-upgrades">
-                    <p class="text-center text-primary text-shadow fs-3">Water Sources</p>
+                    <div class="text-center text-primary text-shadow">
+                        <p class="fs-3">Water Sources</p>
+                        <p><span id="water-rate">0</span> Water flow / sec</p>
+                    </div>
                     <!-- Water source upgrade cards populate here -->
                 </div>
             </div>
             <!-- Flow Controllers -->
-            <div class="col-12 col-sm-6 col-md-4 mb-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-4 col-xxl-3 mb-4">
                 <div class="row flow-shop" id="flow-controller-upgrades">
-                    <p class="text-center text-success text-shadow fs-3">Flow Control</p>
+                    <div class="text-center text-success text-shadow">
+                        <p class="fs-3">Flow Control</p>
+                        <p><span id="flow-throughput">1</span> Throughput</p>
+                    </div>
                     <!-- Flow upgrade cards populate here -->
                 </div>
             </div>
             <!-- Click Strength Modifiers -->
-            <div class="col-12 col-md-4 mb-4">
+            <div class="col-12 col-md-4 col-lg-3 col-xl-4 col-xxl-3 mb-4">
                 <div class="row click-shop" id="click-strength-upgrades">
-                    <p class="text-center text-danger text-shadow fs-3">Click Strength</p>
+                    <div class="text-center text-danger text-shadow">
+                        <p class="fs-3">Click Strength</p>
+                        <p>+<span id="click-strength">1</span> water/click</p>
+                    </div>
                     <!-- Click Strength upgrade cards populate here -->
                 </div>
             </div>
         </section>
-        <!-- !SECTION  -->
+        <!-- #endregion  -->
 
 
     </main>

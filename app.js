@@ -1,32 +1,34 @@
+// #region Global Variables
+
 let waterSources = [
     {
         name: 'Stream',
         cost: 100,
         basePrice: 100,
-        flowRate: .1,
+        flowRate: .15,
         amount: 0
     },
     {
         name: 'Creek',
         cost: 300,
         basePrice: 300,
-        flowRate: 1.5,
+        flowRate: .725,
         amount: 0
     }
 ]
 let flowControllers = [
     {
         name: 'Turbine',
-        cost: 300,
-        basePrice: 300,
-        deltaFlow: 1.9,
+        cost: 1000,
+        basePrice: 1000,
+        deltaFlow: 1,
         amount: 1
     },
     {
         name: 'Bigger Inlets',
-        cost: 600,
-        basePrice: 600,
-        deltaFlow: 1.8,
+        cost: 200,
+        basePrice: 800,
+        deltaFlow: .1,
         amount: 0
     }
 ]
@@ -51,51 +53,52 @@ let electricity = 0
 let water = 0
 let waterCeiling = 100
 let flow = .1
+let multiplier = 1
+
+// #endregion
+
+
+// #region Game Logic
 
 function clickDam() {
     let total = 1
     clickUpgrades.forEach(upgrade => total += upgrade.power * upgrade.amount)
-    water += total
-    draw()
-}
-
-function draw() {
-    document.getElementById('water').innerText = condenseNum(water)
-    document.getElementById('electricity').innerText = condenseNum(electricity)
-    document.getElementById('flow').innerText = condenseNum(flow)
-    clickUpgrades.forEach(upgrade => {
-        document.getElementById(upgrade.name + '-cost').innerText = condenseNum(upgrade.cost)
-    })
-    waterSources.forEach(source => {
-        document.getElementById(source.name + '-cost').innerText = condenseNum(source.cost)
-    })
-    flowControllers.forEach(controller => {
-        document.getElementById(controller.name + '-cost').innerText = condenseNum(controller.cost)
-    })
+    water += total * multiplier
 }
 
 function transferWater() {
     addWater()
     calculateFlow()
     draw()
-    if (water > 0) {
+    if (water > 0 && multiplier == 1) {
         electricity += flow
         water -= flow
+    } else if (multiplier > 1) {
+        electricity += water
+        water = 0
+    }
+    if (water < 0) {
+        water = 0
     }
 }
 
 function calculateFlow() {
-    flow = water / 40
-    flowControllers.forEach(controller => flow *= (controller.deltaFlow * controller.amount) + 1)
+    flowControllers.forEach(controller => flow += (controller.deltaFlow * controller.amount))
+    flow *= water / 100
 }
 
 function addWater() {
     waterSources.forEach(source => {
-        water += source.flowRate * source.amount
+        water += source.flowRate * source.amount * multiplier
     })
     if (water > waterCeiling)
         water = waterCeiling
 }
+
+// #endregion
+
+
+// #region Purchase Handlers
 
 function purchaseSourceUpgrade(name) {
     let waterSource = waterSources.find(source => source.name == name)
@@ -105,9 +108,8 @@ function purchaseSourceUpgrade(name) {
         findPrice(waterSource)
         document.getElementById(waterSource.name + '-amount').innerText = waterSource.amount
     } else {
-        insufficientFundsAlert()
+        sweetAlert('Not enough Electricity', 'error')
     }
-    draw()
 }
 
 function purchaseFlowController(name) {
@@ -118,9 +120,8 @@ function purchaseFlowController(name) {
         findPrice(flowController)
         document.getElementById(flowController.name + '-amount').innerText = flowController.amount
     } else {
-        insufficientFundsAlert()
+        sweetAlert('Not enough Electricity', 'error')
     }
-    draw()
 }
 
 function purchaseClickUpgrade(name) {
@@ -131,10 +132,14 @@ function purchaseClickUpgrade(name) {
         findPrice(clickUpgrade)
         document.getElementById(clickUpgrade.name + '-amount').innerText = clickUpgrade.amount
     } else {
-        insufficientFundsAlert()
+        sweetAlert('Not enough Electricity', 'error')
     }
-    draw()
 }
+
+// #endregion
+
+
+// #region Draw/element constructors
 
 function makeSourceUpgradeDivs() {
     waterSources.forEach(source => {
@@ -147,7 +152,7 @@ function makeSourceUpgradeDivs() {
             <div class="col-12">
                 <div class="row info">
                     <div class="col-7">
-                        <p>+${source.flowRate} Water Flow Rate</p>
+                        <p>+${source.flowRate} Water Flow</p>
                     </div>
                     <div class="col-5 text-end">
                         <p>Owned: <span id="${source.name}-amount">${source.amount}</span></p>
@@ -155,15 +160,16 @@ function makeSourceUpgradeDivs() {
                 </div>
             </div>
             <div class="col-12">
-                <button class="btn btn-success w-100" onclick="purchaseSourceUpgrade('${source.name}')"><i
+                <button id="${source.name}-button" class="btn btn-success w-100" onclick="purchaseSourceUpgrade('${source.name}')"><i
                         class="mdi mdi-flash"></i><span id="${source.name}-cost">${source.cost}</span></button>
             </div>
         </div>
     `
-        element.classList = 'col-12 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
         document.getElementById('water-source-upgrades').appendChild(element)
     })
 }
+
 function makeClickUpgradeDivs() {
     clickUpgrades.forEach(upgrade => {
         let element = document.createElement('div')
@@ -183,14 +189,15 @@ function makeClickUpgradeDivs() {
                 </div>
             </div>
             <div class="col-12">
-                <button class="btn btn-success w-100" onclick="purchaseClickUpgrade('${upgrade.name}')"><i
+                <button id="${upgrade.name}-button" class="btn btn-success w-100" onclick="purchaseClickUpgrade('${upgrade.name}')"><i
                         class="mdi mdi-flash"></i><span id="${upgrade.name}-cost">${upgrade.cost}</span></button>
             </div>
     `
-        element.classList = 'col-12 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
         document.getElementById('click-strength-upgrades').appendChild(element)
     })
 }
+
 function makeFlowUpgradeDivs() {
     flowControllers.forEach(flow => {
         let element = document.createElement('div')
@@ -202,7 +209,7 @@ function makeFlowUpgradeDivs() {
             <div class="col-12">
                 <div class="row info">
                     <div class="col-7">
-                        <p>+${flow.deltaFlow} Click Strength</p>
+                        <p>+${flow.deltaFlow} Throughput</p>
                     </div>
                     <div class="col-5 text-end">
                         <p>Owned: <span id="${flow.name}-amount">${flow.amount}</span></p>
@@ -210,14 +217,123 @@ function makeFlowUpgradeDivs() {
                 </div>
             </div>
             <div class="col-12">
-                <button class="btn btn-success w-100" onclick="purchaseFlowController('${flow.name}')"><i
-                        class="mdi mdi-flash"></i><span id="${flow.name}-cost">${flow.cost}</span></button>
+                <button id="${flow.name}-button" class="btn btn-success w-100" onclick="purchaseFlowController('${flow.name}')">
+                <i class="mdi mdi-flash"></i><span id="${flow.name}-cost">${flow.cost}</span></button>
             </div>
         </div>
     `
-        element.classList = 'col-12 upgrade-card'
+        element.classList = 'col-12 col-lg-12 col-xl-6 upgrade-card'
         document.getElementById('flow-controller-upgrades').appendChild(element)
     })
+}
+
+function draw() {
+    // Currency Updates
+    document.getElementById('water').innerText = condenseNum(water)
+    document.getElementById('electricity').innerText = condenseNum(electricity)
+    document.getElementById('flow').innerHTML = multiplier == 1 ? condenseNum(flow) : '<i class="mdi mdi-all-inclusive"></i>'
+
+    // water flow bar
+    document.getElementById('water-div').style.background = multiplier == 1 ? `linear-gradient(90deg, #0d6efd ${water}%, #ffffff ${water}%)` : 'gold'
+    document.getElementById('flow-div').style.backgroundColor = (water > 90 ? 'red' : '#198754')
+
+    // click Power calculation
+    let clickPower = 1
+    clickUpgrades.forEach(upgrade => clickPower += upgrade.power * upgrade.amount)
+    document.getElementById('click-strength').innerText = condenseNum(clickPower)
+
+    // flow throughput calculation
+    let throughput = 0
+    flowControllers.forEach(controller => throughput += controller.deltaFlow * controller.amount)
+    document.getElementById('flow-throughput').innerText = condenseNum(throughput)
+
+    //  water flow calculation
+    let waterFlow = 0
+    waterSources.forEach(source => waterFlow += source.flowRate * source.amount)
+    document.getElementById('water-rate').innerText = condenseNum(waterFlow * 20)
+
+    // Button cost updates
+    clickUpgrades.forEach(upgrade => {
+        document.getElementById(upgrade.name + '-cost').innerText = condenseNum(upgrade.cost)
+        if (upgrade.cost > electricity) {
+            document.getElementById(upgrade.name + '-button').classList.add('disabled')
+        } else {
+            document.getElementById(upgrade.name + '-button').classList.remove('disabled')
+        }
+    })
+    waterSources.forEach(source => {
+        document.getElementById(source.name + '-cost').innerText = condenseNum(source.cost)
+        if (source.cost > electricity) {
+            document.getElementById(source.name + '-button').classList.add('disabled')
+        } else {
+            document.getElementById(source.name + '-button').classList.remove('disabled')
+        }
+    })
+    flowControllers.forEach(controller => {
+        document.getElementById(controller.name + '-cost').innerText = condenseNum(controller.cost)
+        if (controller.cost > electricity) {
+            document.getElementById(controller.name + '-button').classList.add('disabled')
+        } else {
+            document.getElementById(controller.name + '-button').classList.remove('disabled')
+        }
+    })
+}
+
+function sweetAlert(message, icon, timer) {
+    Swal.fire({
+        position: 'top-end',
+        icon: icon,
+        title: message,
+        showConfirmButton: false,
+        timer: timer ? timer : 1500,
+        toast: true
+    })
+}
+
+function makeBonusButton() {
+    let randX = Math.floor(Math.random() * 101)
+    let randY = Math.floor(Math.random() * 101)
+    let element = document.createElement('div')
+    let timeout = setTimeout(removeElement, 7000, element)
+    element.innerHTML = `
+    <img id="${timeout}" class="fish-img" type="button" onclick="bonusClicked(${timeout})" src="https://purepng.com/public/uploads/large/purepng.com-fishfish-981524646248khl3k.png" alt="fish">
+    `
+    element.classList = 'position-absolute'
+    element.style.left = randX + '%'
+    element.style.top = randY + '%'
+    document.getElementById('dam-container').appendChild(element)
+}
+
+
+// #endregion
+
+function bonusClicked(timeoutID) {
+    clearTimeout(timeoutID)
+    element = document.getElementById(timeoutID)
+    removeElement(element)
+    bonusActivate()
+}
+function bonusActivate() {
+    sweetAlert('Bonus!!! <br> 5x Multiplier and no flow resistance!', 'success', 10000)
+    document.getElementById('dam-container').classList.add('dam-image-boost')
+    multiplier = 5
+    setTimeout(bonusDeactivate, 10000)
+}
+function bonusDeactivate() {
+    document.getElementById('dam-container').classList.remove('dam-image-boost')
+    multiplier = 1
+}
+
+// #region Util Functions
+
+function condenseNum(number) {
+    let abbreviations = ['', 'K', 'M', 'B', 't', 'q', 'Q', 's', 'S', 'o', 'n', 'd', 'U', 'D', 'T', 'Qt']
+    for (let i = 0; true; i++) {
+        if (number / (1000 ** i) < 1000) {
+            return (number / (1000 ** i)).toFixed(2) + abbreviations[i]
+        }
+    }
+    return number
 }
 
 function findPrice(upgrade) {
@@ -227,26 +343,14 @@ function findPrice(upgrade) {
     return newPrice
 }
 
-function insufficientFundsAlert() {
-    Swal.fire({
-        position: 'top-end',
-        icon: 'error',
-        title: 'Not enough Electricity',
-        showConfirmButton: false,
-        timer: 1500,
-        toast: true
-    })
+function removeElement(element) {
+    element.parentElement.removeChild(element)
 }
 
-function condenseNum(number) {
-    let abbreviations = ['', 'k', 'm', 'b', 't',]
-    for (let i = 0; true; i++) {
-        if (number / (1000 ** i) <= 1000) {
-            return (number / (1000 ** i)).toFixed(2) + abbreviations[i]
-        }
-    }
-    return number
-}
+// #endregion
+
+
+// #region Save/Load Functions
 
 function saveGame() {
     window.localStorage.setItem('dam clicker info', JSON.stringify([
@@ -264,9 +368,19 @@ function loadGame() {
     }
 }
 
+function resetGame() {
+    if (window.localStorage.getItem('dam clicker info')) {
+        window.localStorage.removeItem('dam clicker info')
+        location.reload()
+    }
+}
+
+// #endregion
+
 loadGame()
-setInterval(transferWater, 100)
+setInterval(transferWater, 50)
 setInterval(saveGame, 10000)
+setInterval(makeBonusButton, 30000)
 makeSourceUpgradeDivs()
 makeFlowUpgradeDivs()
 makeClickUpgradeDivs()

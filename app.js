@@ -269,6 +269,7 @@ function draw() {
 
     // Button cost updates
     clickUpgrades.forEach(upgrade => {
+        document.getElementById(upgrade.name + '-amount').innerText = upgrade.amount
         document.getElementById(upgrade.name + '-cost').innerText = condenseNum(upgrade.cost)
         if (upgrade.cost > electricity) {
             document.getElementById(upgrade.name + '-button').classList.add('disabled')
@@ -280,6 +281,7 @@ function draw() {
         }
     })
     waterSources.forEach(source => {
+        document.getElementById(source.name + '-amount').innerText = source.amount
         document.getElementById(source.name + '-cost').innerText = condenseNum(source.cost)
         if (source.cost > electricity) {
             document.getElementById(source.name + '-button').classList.add('disabled')
@@ -291,6 +293,7 @@ function draw() {
         }
     })
     flowControllers.forEach(controller => {
+        document.getElementById(controller.name + '-amount').innerText = controller.amount
         document.getElementById(controller.name + '-cost').innerText = condenseNum(controller.cost)
         if (controller.cost > electricity) {
             document.getElementById(controller.name + '-button').classList.add('disabled')
